@@ -1,0 +1,10 @@
+name: postman_clone
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postClone
+      - POSTGRES_PASSWORD=postClone
+      - POSTGRES_DB=postCloneDB
+    ports:
+      - 5432:5432
