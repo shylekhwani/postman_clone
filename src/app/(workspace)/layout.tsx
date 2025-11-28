@@ -1,10 +1,12 @@
 import Header from "@/modules/layouts/components/Header";
 import { currentUser } from "@/modules/authentication/actions";
+import { initializeWorkspace } from "@/modules/workspace/action";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  //   const workspace = await initializeWorkspace()
-
+  const workspace = await initializeWorkspace();
   const user = await currentUser();
+
+  console.log(workspace);
   return (
     <>
       {/* @ts-expect-error Fix user type later */}
