@@ -1,24 +1,30 @@
-import { PrismaClient } from "@prisma/client"; // Import the PrismaClient class from the Prisma package
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-// Declare a global variable type definition for PrismaClient
+// Create a PG pool
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// Create Prisma adapter
+const adapter = new PrismaPg(pool);
+
+// Global type declaration (for next.js hot reload)
 declare global {
+  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 
-// Create or reuse an existing PrismaClient instance
+// Create or reuse existing Prisma client
 const db =
-  globalThis.prisma ||
+  globalThis.prisma ??
   new PrismaClient({
+    adapter, // ✅ MUST include adapter ONLY in Prisma 6+
     log: ["query", "info", "warn", "error"],
   });
-/**
- Explanation:
-    --  globalThis.prisma — checks if we already have a Prisma client stored globally (to reuse it).
-    --  If not, new PrismaClient({...}) creates one.
-    --  The log option lets Prisma print out queries and other details in the console — useful for debugging.
- */
 
-// In development mode, store the Prisma client globally
+// Cache Prisma instance in dev mode
 if (process.env.NODE_ENV === "development") {
   globalThis.prisma = db;
 }
