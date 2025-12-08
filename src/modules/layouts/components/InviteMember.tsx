@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Hint } from "@/components/ui/Hint";
-// import { useWorkspaceStore } from "../store";
+import { useWorkspaceStore } from "../store";
 import { toast } from "sonner";
 // import {
 //   useGenerateWorkspaceInvite,
@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 const InviteMember = () => {
   const [inviteLink, setInviteLink] = useState("");
-  //   const { selectedWorkspace } = useWorkspaceStore();
+  const { selectedWorkspace } = useWorkspaceStore();
 
   //   const { mutateAsync, isPending } = useGenerateWorkspaceInvite(
   //     selectedWorkspace?.id || ""
@@ -68,7 +68,7 @@ const InviteMember = () => {
       <DropdownMenuContent className="w-80 rounded-xl" align="end">
         <div className="p-4">
           <DropdownMenuLabel>
-            {/* Invite to {selectedWorkspace?.name} */}
+            Invite to {selectedWorkspace?.name}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
