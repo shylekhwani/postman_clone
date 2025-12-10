@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useWorkspaces } from "@/modules/workspace/hooks/workspace";
-import { useWorkspaceStore } from "../store";
+import { useWorkspaceStore } from "../../workspace/store";
 
 const WorkSpace = () => {
   const { data: workspaces, isLoading } = useWorkspaces();
