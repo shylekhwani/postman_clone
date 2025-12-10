@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Hint } from "@/components/ui/Hint";
-import { useWorkspaceStore } from "../store";
+import { useWorkspaceStore } from "../../workspace/store";
 import { toast } from "sonner";
 // import {
 //   useGenerateWorkspaceInvite,
