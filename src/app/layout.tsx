@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "../components/ui/theme-provider";
 import { QueryProvider } from "@/components/QueryProvider";
 import ToasterComp from "@/modules/layouts/components/Toaster";
+import { HotkeysProviders } from "@/components/HotKeyProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,8 +38,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ToasterComp />
-            {children}
+            <HotkeysProviders>
+              <ToasterComp />
+              {children}
+            </HotkeysProviders>
           </ThemeProvider>
         </QueryProvider>
       </body>

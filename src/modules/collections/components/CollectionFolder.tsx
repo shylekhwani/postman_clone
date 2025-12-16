@@ -60,6 +60,7 @@ const CollectionFolder = ({ collection }: Props) => {
   };
 
   const hasRequests = requestData && requestData.length > 0;
+  console.log("Requests in Collection:", requestData);
 
   return (
     <>
