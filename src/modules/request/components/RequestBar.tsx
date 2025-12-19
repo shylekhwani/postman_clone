@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { RequestTab } from "../store/useRequestStore";
 
@@ -6,7 +7,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -37,8 +37,11 @@ const RequestBar = ({ tab, updateTab }: Props) => {
       const res = await mutateAsync();
 
       toast.success("Request sent successfully!");
-    } catch (error) {
-      toast.error("Failed to send request.");
+    } catch (error: any) {
+      if (isError) {
+        toast.error("Error sending request.");
+      }
+      toast.error(`Failed to send request. ${error.toString()}`);
     }
   };
 

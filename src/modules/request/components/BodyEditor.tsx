@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -63,15 +64,30 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
   onSubmit,
   className,
 }) => {
-  const [copied, setCopied] = useState(false);
-  const [showGenerateDialog, setShowGenerateDialog] = useState(false);
-  const [prompt, setPrompt] = useState("");
-  const { selectedWorkspace } = useWorkspaceStore();
+  // --------------------------------------------------
+  // STEP 1: Local UI state (these DO cause re-renders)
+  // --------------------------------------------------
+  const [copied, setCopied] = useState(false); // copy button feedback
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false); // AI modal
+  const [prompt, setPrompt] = useState(""); // user AI prompt
 
+  // --------------------------------------------------
+  // STEP 2: External global state (Zustand stores)
+  // Changing these WILL re-render this component
+  // --------------------------------------------------
+  // const { selectedWorkspace } = useWorkspaceStore();
   const { tabs, activeTabId } = useRequestPlaygroundStore();
 
-  const { mutateAsync, data, isPending, isError } = useGenerateJsonBody();
+  // --------------------------------------------------
+  // STEP 3: React Query / mutation hook for AI
+  // isPending, isError affect UI → re-render
+  // --------------------------------------------------
+  const { mutateAsync, isPending } = useGenerateJsonBody();
 
+  // --------------------------------------------------
+  // STEP 4: React Hook Form setup
+  // Form values live OUTSIDE React state
+  // --------------------------------------------------
   const form = useForm<BodyEditorFormData>({
     resolver: zodResolver(bodyEditorSchema),
     defaultValues: {
@@ -80,41 +96,60 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
     },
   });
 
+  // --------------------------------------------------
+  // STEP 5: Subscribe to RHF values
+  // This does NOT re-render on every keystroke
+  // --------------------------------------------------
   const contentType = form.watch("contentType");
   const bodyValue = form.watch("body");
 
-  // Handle editor value changes
+  // --------------------------------------------------
+  // STEP 6: Monaco editor → RHF bridge
+  // User types → RHF internal state updates
+  // React component does NOT re-render
+  // --------------------------------------------------
   const handleEditorChange = (value?: string) => {
     form.setValue("body", value || "", { shouldValidate: true });
   };
 
-  // Handle copy
+  // --------------------------------------------------
+  // STEP 7: Copy button handler
+  // setCopied(true) → re-render (UI feedback)
+  // --------------------------------------------------
   const handleCopy = async () => {
     if (bodyValue) {
       try {
         await navigator.clipboard.writeText(bodyValue);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setCopied(true); // re-render
+        setTimeout(() => setCopied(false), 2000); // re-render again
       } catch (err) {
         console.error("Failed to copy:", err);
       }
     }
   };
 
+  // --------------------------------------------------
+  // STEP 8: Open AI dialog
+  // --------------------------------------------------
   const handleGenerateClick = () => {
-    setShowGenerateDialog(true);
+    setShowGenerateDialog(true); // re-render
   };
 
+  // --------------------------------------------------
+  // STEP 9: AI body generation flow
+  // --------------------------------------------------
   const onGenerateBody = async (promptText: string) => {
     try {
+      // Optional validation of existing JSON
       if (bodyValue) {
         try {
           JSON.parse(bodyValue);
         } catch (e) {
-          console.log("Invalid existing JSON, generating new schema");
+          console.log("Invalid existing JSON, generating new schema", e);
         }
       }
 
+      // Call AI mutation
       const result = await mutateAsync({
         prompt: promptText,
         method: tabs.find((t) => t.id === activeTabId)?.method || "POST",
@@ -122,9 +157,12 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
         context: `Generate a JSON body with the following requirements: ${promptText}`,
       });
 
+      // Update RHF form value (NO re-render)
       if (result?.jsonBody) {
         form.setValue("body", JSON.stringify(result.jsonBody, null, 2));
       }
+
+      // Close dialog & reset prompt → re-render
       setShowGenerateDialog(false);
       setPrompt("");
     } catch (error) {
@@ -132,22 +170,30 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
     }
   };
 
+  // --------------------------------------------------
+  // STEP 10: Format JSON manually
+  // --------------------------------------------------
   const handleFormat = () => {
     if (contentType === "application/json" && bodyValue) {
       try {
         const formatted = JSON.stringify(JSON.parse(bodyValue), null, 2);
-        form.setValue("body", formatted);
+        form.setValue("body", formatted); // RHF update only
       } catch (error) {
-        console.error("Invalid JSON format");
+        console.error("Invalid JSON format", error);
       }
     }
   };
 
-  // Reset
+  // --------------------------------------------------
+  // STEP 11: Reset body
+  // --------------------------------------------------
   const handleReset = () => {
-    form.setValue("body", "");
+    form.setValue("body", ""); // RHF update only
   };
 
+  // --------------------------------------------------
+  // STEP 12: Static config (no state, no re-render)
+  // --------------------------------------------------
   const contentTypeOptions = [
     {
       value: "application/json",

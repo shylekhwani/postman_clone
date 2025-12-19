@@ -6,11 +6,12 @@ import TabBar from "./TabBar";
 import { useRequestPlaygroundStore } from "../store/useRequestStore";
 import { useState } from "react";
 import { toast } from "sonner";
-import SaveRequestToCollectionModal from "@/modules/collections/components/AddRequestModal";
+import AddRequestToCollectionModal from "@/modules/collections/components/AddRequestModal";
 import { REST_METHOD } from "@prisma/client";
 
 import { Unplug } from "lucide-react";
 import { useSaveRequest } from "../hooks/request";
+import { set } from "zod";
 
 export default function PlaygroundPage() {
   const { tabs, activeTabId, addTab } = useRequestPlaygroundStore();
@@ -24,7 +25,7 @@ export default function PlaygroundPage() {
   const getCurrentRequestData = () => {
     if (!activeTab) {
       return {
-        name: "Untitled Request",
+        name: "not Untitled Request",
         method: REST_METHOD.GET as REST_METHOD,
         url: "https://echo.hoppscotch.io",
       };
@@ -119,7 +120,7 @@ export default function PlaygroundPage() {
       </div>
 
       {/* Save Request Modal */}
-      <SaveRequestToCollectionModal
+      <AddRequestToCollectionModal
         isModalOpen={showSaveModal}
         setIsModalOpen={setShowSaveModal}
         requestData={getCurrentRequestData()}

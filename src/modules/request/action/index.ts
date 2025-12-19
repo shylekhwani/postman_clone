@@ -34,7 +34,7 @@ export const addRequestToCollection = async (
 };
 
 export const saveRequest = async (id: string, value: Request) => {
-  await db.request.update({
+  const requests = await db.request.update({
     where: {
       id,
     },
@@ -46,6 +46,7 @@ export const saveRequest = async (id: string, value: Request) => {
       headers: value.headers,
     },
   });
+  return requests;
 };
 
 export const getAllRequestFromCollection = async (collectionId: string) => {

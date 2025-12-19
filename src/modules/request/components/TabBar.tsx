@@ -14,6 +14,7 @@ const requestColorMap: Record<string, string> = {
 export default function TabBar() {
   const { tabs, activeTabId, setActiveTab, addTab, closeTab } =
     useRequestPlaygroundStore();
+
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
 

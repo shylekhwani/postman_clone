@@ -1,28 +1,30 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRequestToCollection,
   getAllRequestFromCollection,
   Request,
-  saveRequest,
   run,
+  saveRequest,
 } from "../action";
 import { useRequestPlaygroundStore } from "../store/useRequestStore";
 
 export function useAddRequestToCollection(collectionId: string) {
   const queryClient = useQueryClient();
-
+  const { updateTabFromSavedRequest, activeTabId } =
+    useRequestPlaygroundStore();
   return useMutation({
     mutationFn: async (value: Request) =>
       addRequestToCollection(collectionId, value),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["requests", collectionId] });
+      // @ts-expect-error
+      updateTabFromSavedRequest(activeTabId, data);
     },
   });
 }
 
 export function useGetAllRequestFromCollection(collectionId: string) {
-  // const queryClient = useQueryClient();
   return useQuery({
     queryKey: ["requests", collectionId],
     queryFn: async () => getAllRequestFromCollection(collectionId),
@@ -30,12 +32,18 @@ export function useGetAllRequestFromCollection(collectionId: string) {
 }
 
 export function useSaveRequest(id: string) {
+  const { updateTabFromSavedRequest, activeTabId } =
+    useRequestPlaygroundStore();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (value: Request) => saveRequest(id, value),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Saved request data:", data);
       queryClient.invalidateQueries({ queryKey: ["requests"] });
+
+      // @ts-ignore
+      updateTabFromSavedRequest(activeTabId, data);
     },
   });
 }
@@ -47,6 +55,7 @@ export function useRunRequest(requestId: string) {
     mutationFn: async () => await run(requestId),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["requests"] });
+      // @ts-expect-error
       setResponseViewerData(data);
     },
   });

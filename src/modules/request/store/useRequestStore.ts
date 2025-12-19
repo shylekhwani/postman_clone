@@ -63,7 +63,7 @@ export const useRequestPlaygroundStore = create<PlaygroundState>((set) => ({
     set((state) => {
       const newTab: RequestTab = {
         id: nanoid(),
-        title: "Untitled",
+        title: "Untitled Req",
         method: "GET",
         url: "",
         body: "",
@@ -137,17 +137,17 @@ export const useRequestPlaygroundStore = create<PlaygroundState>((set) => ({
         t.id === tabId
           ? {
               ...t,
-              id: savedRequest.id, // ✅ Replace temporary id with saved one
-              title: savedRequest.name,
-              method: savedRequest.method,
+              id: savedRequest?.id, // ✅ Replace temporary id with saved one
+              title: savedRequest?.name,
+              method: savedRequest?.method,
               body: savedRequest?.body,
               headers: savedRequest?.headers,
               parameters: savedRequest?.parameters,
-              url: savedRequest.url,
+              url: savedRequest?.url,
               unsavedChanges: false,
             }
           : t
       ),
-      activeTabId: savedRequest.id, // ✅ keep active in sync
+      activeTabId: savedRequest?.id, // ✅ keep active in sync
     })),
 }));

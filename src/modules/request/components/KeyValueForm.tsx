@@ -2,12 +2,11 @@
 "use client";
 
 import React, { useEffect, useRef, useCallback } from "react";
-import { useForm, useFieldArray, Control } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -57,6 +56,9 @@ const KeyValueFormEditor: React.FC<KeyValueFormEditorProps> = ({
   },
   className,
 }) => {
+  /**************************************
+   * 1️⃣ FORM INITIALIZATION
+   **************************************/
   const form = useForm<KeyValueFormData>({
     resolver: zodResolver(keyValueSchema),
     defaultValues: {
@@ -70,26 +72,21 @@ const KeyValueFormEditor: React.FC<KeyValueFormEditorProps> = ({
     },
   });
 
+  /**************************************
+   * 2️⃣ DYNAMIC ARRAY HANDLING
+   **************************************/
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items",
   });
-
-  const handleSubmit = (data: KeyValueFormData) => {
-    const filteredItems = data.items
-      .filter((item) => item.enabled && (item.key.trim() || item.value.trim()))
-      .map(({ key, value }) => ({ key, value }));
-
-    onSubmit(filteredItems);
-  };
 
   const addNewRow = () => {
     append({ key: "", value: "", enabled: true });
   };
 
   const toggleEnabled = (index: number) => {
-    const currentValue = form.getValues(`items.${index}.enabled`);
-    form.setValue(`items.${index}.enabled`, !currentValue);
+    const current = form.getValues(`items.${index}.enabled`);
+    form.setValue(`items.${index}.enabled`, !current);
   };
 
   const removeRow = (index: number) => {
@@ -98,63 +95,96 @@ const KeyValueFormEditor: React.FC<KeyValueFormEditorProps> = ({
     }
   };
 
-  // Autosave on changes with debounce
-  // We'll serialize the filtered items and only call onSubmit when it changes.
-  const lastSavedRef = useRef<string | null>(null);
+  /**************************************
+   * 3️⃣ AUTOSAVE CORE LOGIC
+   **************************************/
 
-  const getFilteredItemsFromValues = (items: KeyValueItem[]) =>
+  /**
+   * Stores the last submitted version of data.
+   * Used to prevent duplicate submissions.
+   */
+  const lastSubmittedSnapshotRef = useRef<string | null>(null);
+
+  /**
+   * Filters enabled + non-empty items
+   */
+  const filterValidItems = (items: KeyValueItem[]) =>
     items
       .filter(
         (item) => item.enabled && (item.key?.trim() || item.value?.trim())
       )
       .map(({ key, value }) => ({ key, value }));
 
-  // Simple debounce implementation
-  const debounce = (fn: (...args: any[]) => void, wait = 500) => {
-    let t: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * Creates a debounced function
+   * (classic debounce implementation)
+   */
+  const createDebouncedFn = (fn: (...args: any[]) => void, delay = 500) => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     return (...args: any[]) => {
-      if (t) clearTimeout(t);
-      t = setTimeout(() => fn(...args), wait);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
     };
   };
 
-  const saveIfChanged = useCallback(
+  /**************************************
+   * 4️⃣ SUBMIT ONLY IF DATA CHANGED
+   **************************************/
+  const submitIfDataChanged = useCallback(
     (items: KeyValueItem[]) => {
-      const filtered = getFilteredItemsFromValues(items);
-      const serialized = JSON.stringify(filtered);
-      if (serialized !== lastSavedRef.current) {
-        lastSavedRef.current = serialized;
+      const filtered = filterValidItems(items);
+      const snapshot = JSON.stringify(filtered);
+
+      if (snapshot !== lastSubmittedSnapshotRef.current) {
+        lastSubmittedSnapshotRef.current = snapshot;
         onSubmit(filtered);
       }
     },
     [onSubmit]
   );
 
-  const debouncedSaveRef = useRef(saveIfChanged);
-  // keep ref up to date when saveIfChanged changes
-  useEffect(() => {
-    debouncedSaveRef.current = saveIfChanged;
-  }, [saveIfChanged]);
+  /**************************************
+   * 5️⃣ REFS TO AVOID STALE CLOSURES
+   **************************************/
 
-  const debouncedInvokerRef = useRef<((items: KeyValueItem[]) => void) | null>(
+  /**
+   * Always points to the LATEST submit function
+   * (important for setTimeout)
+   */
+  const latestSubmitFnRef = useRef(submitIfDataChanged);
+
+  useEffect(() => {
+    latestSubmitFnRef.current = submitIfDataChanged;
+  }, [submitIfDataChanged]);
+
+  /**
+   * Holds the debounced trigger function
+   * Created only once
+   */
+  const debouncedTriggerRef = useRef<((items: KeyValueItem[]) => void) | null>(
     null
   );
+
   useEffect(() => {
-    debouncedInvokerRef.current = debounce((items: KeyValueItem[]) => {
-      debouncedSaveRef.current(items);
+    debouncedTriggerRef.current = createDebouncedFn((items: KeyValueItem[]) => {
+      latestSubmitFnRef.current(items);
     }, 500);
   }, []);
 
-  // Watch form values and trigger debounced save
+  /**************************************
+   * 6️⃣ WATCH FORM CHANGES
+   **************************************/
   useEffect(() => {
-    const subscription = form.watch((value) => {
-      const items = (value as KeyValueFormData)?.items || [];
-      debouncedInvokerRef.current?.(items as KeyValueItem[]);
+    const subscription = form.watch((values) => {
+      const items = (values as KeyValueFormData)?.items || [];
+      debouncedTriggerRef.current?.(items);
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
 
+  // console.log(form);
   return (
     <div className={cn("w-full", className)}>
       <Form {...form}>

@@ -19,7 +19,8 @@ const AddNameModal = ({
   tabId: string;
 }) => {
   const { updateTab, tabs, markUnsaved } = useRequestPlaygroundStore();
-  const { mutateAsync, data, isPending, isError } = useSuggestRequestName();
+  const { mutateAsync, isPending } = useSuggestRequestName();
+
   const tab = tabs.find((t) => t.id === tabId);
 
   const [name, setName] = useState(tab?.title || "");
@@ -29,7 +30,7 @@ const AddNameModal = ({
 
   useEffect(() => {
     if (tab) setName(tab.title);
-  }, [tabId]);
+  }, [tabId, tab]);
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
