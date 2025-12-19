@@ -20,11 +20,7 @@ const TabbedSidebar = ({ currentWorkspace }: Props) => {
   const [activeTab, setActiveTab] = useState("Collections");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const {
-    data: collections,
-    isLoading,
-    isError,
-  } = useCollections(currentWorkspace?.id);
+  const { data: collections, isLoading } = useCollections(currentWorkspace?.id);
 
   if (isLoading)
     return (

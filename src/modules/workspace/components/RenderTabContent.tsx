@@ -18,6 +18,7 @@ const RenderTabContent = ({
   collections,
   setIsModalOpen,
 }: Props) => {
+  // console.log("collections in RenderTabContent:", collections);
   if (activeTab === "Collections") {
     return (
       <div className="h-full bg-zinc-950 text-zinc-100 flex flex-col">

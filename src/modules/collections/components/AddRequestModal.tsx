@@ -113,7 +113,7 @@ const AddRequestToCollectionModal = ({
 
   return (
     <Modal
-      title="Save as"
+      title="Add Request to Collection"
       description=""
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
