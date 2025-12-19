@@ -50,8 +50,11 @@ interface Props {
 }
 
 const ResponseViewer = ({ responseData }: Props) => {
+  console.log("Response Data:", responseData);
+  // STEP 1: UI-only state (tabs)
   const [activeTab, setActiveTab] = useState("json");
 
+  // STEP 2: Utility helpers (pure functions)
   const getStatusColor = (status?: number): string => {
     const s = typeof status === "number" ? status : 0;
     if (s >= 200 && s < 300) return "text-green-400";
@@ -69,6 +72,7 @@ const ResponseViewer = ({ responseData }: Props) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  // STEP 3: Clipboard helper (side effect)
   const copyToClipboard = (text: string) => {
     if (!navigator?.clipboard) return;
     navigator.clipboard.writeText(text).catch(() => {
@@ -76,19 +80,24 @@ const ResponseViewer = ({ responseData }: Props) => {
     });
   };
 
-  // Defensive parse: body may be already an object or invalid JSON
+  // STEP 4: Parse response body safely
   let responseBody: unknown = {};
   let formattedJsonString = "";
+
   try {
     const rawBody = responseData?.requestRun?.body;
+
+    // Parse only if string
     if (typeof rawBody === "string") {
       responseBody = rawBody.length ? JSON.parse(rawBody) : rawBody;
     } else {
       responseBody = rawBody ?? {};
     }
+
+    // Pre-format JSON for editor
     formattedJsonString = JSON.stringify(responseBody, null, 2);
-  } catch (e) {
-    // If parsing fails, fall back to the raw string
+  } catch {
+    // Fallback if parsing fails
     responseBody = responseData?.requestRun?.body ?? {};
     formattedJsonString =
       typeof responseBody === "string"
@@ -96,14 +105,15 @@ const ResponseViewer = ({ responseData }: Props) => {
         : JSON.stringify(responseBody, null, 2);
   }
 
+  // STEP 5: Prefer live result over DB snapshot
   const status: number | undefined =
-    responseData.result?.status ?? responseData.requestRun?.status;
+    responseData?.result?.status ?? responseData?.requestRun?.status;
   const statusText: string | undefined =
-    responseData.result?.statusText ?? responseData.requestRun?.statusText;
+    responseData?.result?.statusText ?? responseData?.requestRun?.statusText;
   const duration: number | undefined =
-    responseData.result?.duration ?? responseData.requestRun?.durationMs;
-  const size: number | undefined = responseData.result?.size;
-  const rawBody = responseData.requestRun?.body;
+    responseData?.result?.duration ?? responseData?.requestRun?.durationMs;
+  const size: number | undefined = responseData?.result?.size;
+  const rawBody = responseData?.requestRun?.body;
 
   return (
     <div className="w-full bg-zinc-950 text-white p-6">
@@ -203,7 +213,7 @@ const ResponseViewer = ({ responseData }: Props) => {
                       className="ml-2 text-xs bg-zinc-700"
                     >
                       {
-                        Object.keys(responseData.requestRun.headers ?? {})
+                        Object.keys(responseData?.requestRun?.headers ?? {})
                           .length
                       }
                     </Badge>

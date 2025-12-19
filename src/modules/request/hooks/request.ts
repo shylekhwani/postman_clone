@@ -54,6 +54,7 @@ export function useRunRequest(requestId: string) {
   return useMutation({
     mutationFn: async () => await run(requestId),
     onSuccess: (data) => {
+      // console.log("Run request data:", data);
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       // @ts-expect-error
       setResponseViewerData(data);

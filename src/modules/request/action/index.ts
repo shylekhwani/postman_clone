@@ -66,12 +66,12 @@ export async function sendRequest(req: {
   body?: any;
 }) {
   const config: AxiosRequestConfig = {
-    method: req.method,
-    url: req.url,
-    headers: req.headers,
-    params: req.params,
-    data: req.body,
-    validateStatus: () => true, // ✅ capture errors too
+    method: req.method, // GET / POST / PUT / DELETE
+    url: req.url, // https://api.example.com
+    headers: req.headers, // Authorization, Content-Type
+    params: req.params, // query params (?a=1)
+    data: req.body, // request body
+    validateStatus: () => true,
   };
 
   const start = performance.now();
@@ -84,7 +84,7 @@ export async function sendRequest(req: {
       res.headers["content-length"] ||
       new TextEncoder().encode(JSON.stringify(res.data)).length;
 
-    console.log(res.data);
+    // console.log(res.data);
 
     return {
       status: res.status,
@@ -107,6 +107,9 @@ export async function run(requestId: string) {
   try {
     const request = await db.request.findUnique({
       where: { id: requestId },
+      include: {
+        runs: true, // 👈 THIS LINE
+      },
     });
 
     if (!request) {
@@ -122,6 +125,8 @@ export async function run(requestId: string) {
     };
 
     const result = await sendRequest(requestConfig);
+
+    console.log("Request run result:", result);
 
     const requestRun = await db.requestRun.create({
       data: {

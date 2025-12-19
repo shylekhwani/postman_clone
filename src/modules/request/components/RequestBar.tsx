@@ -35,6 +35,7 @@ const RequestBar = ({ tab, updateTab }: Props) => {
   const onSendRequest = async () => {
     try {
       const res = await mutateAsync();
+      console.log("Request sent successfully:", res);
 
       toast.success("Request sent successfully!");
     } catch (error: any) {

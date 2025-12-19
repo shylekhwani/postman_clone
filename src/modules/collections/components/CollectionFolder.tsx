@@ -28,7 +28,7 @@ import { useGetAllRequestFromCollection } from "@/modules/request/hooks/request"
 import { REST_METHOD } from "@prisma/client";
 import { useRequestPlaygroundStore } from "@/modules/request/store/useRequestStore";
 
-interface Props {
+export interface CollectionProps {
   collection: {
     id: string;
     name: string;
@@ -37,7 +37,7 @@ interface Props {
   };
 }
 
-const CollectionFolder = ({ collection }: Props) => {
+const CollectionFolder = ({ collection }: CollectionProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isAddRequestOpen, setIsAddRequestOpen] = useState(false);
