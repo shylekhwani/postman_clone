@@ -17,12 +17,12 @@ export default function RequestEditor() {
   const { data: requestData } = useGetAllRequestFromCollection(
     activeTab?.collectionId || ""
   );
-  console.log("Fetched request data:", requestData);
+  // console.log("Fetched request data:", requestData);
 
   const responseToShow = requestData?.find(
     (r) => r.id === activeTab?.requestId
   );
-  console.log("Response to show:", responseToShow);
+  // console.log("Response to show:", responseToShow);
 
   const liveResponseForTab =
     responseViewerData?.requestRun?.requestId === activeTab?.requestId
