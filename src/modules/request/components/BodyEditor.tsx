@@ -70,6 +70,7 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
   const [copied, setCopied] = useState(false); // copy button feedback
   const [showGenerateDialog, setShowGenerateDialog] = useState(false); // AI modal
   const [prompt, setPrompt] = useState(""); // user AI prompt
+  const { selectedWorkspace } = useWorkspaceStore();
 
   // --------------------------------------------------
   // STEP 2: External global state (Zustand stores)
