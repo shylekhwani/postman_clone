@@ -2,6 +2,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRequestToCollection,
+  deleteRequest,
+  editRequest,
   getAllRequestFromCollection,
   Request,
   run,
@@ -20,6 +22,28 @@ export function useAddRequestToCollection(collectionId: string) {
       queryClient.invalidateQueries({ queryKey: ["requests", collectionId] });
       // @ts-expect-error
       updateTabFromSavedRequest(activeTabId, data);
+    },
+  });
+}
+
+export function useDeleteRequest(requestId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => deleteRequest(requestId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
+    },
+  });
+}
+
+export function useEditRequest(requestId: string, name: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => editRequest(requestId, name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
     },
   });
 }

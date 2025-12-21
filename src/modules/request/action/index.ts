@@ -33,6 +33,25 @@ export const addRequestToCollection = async (
   return request;
 };
 
+export const deleteRequest = async (requestId: string) => {
+  await db.request.delete({
+    where: {
+      id: requestId,
+    },
+  });
+};
+
+export const editRequest = async (requestId: string, name: string) => {
+  await db.request.update({
+    where: {
+      id: requestId,
+    },
+    data: {
+      name,
+    },
+  });
+};
+
 export const saveRequest = async (id: string, value: Request) => {
   const requests = await db.request.update({
     where: {
