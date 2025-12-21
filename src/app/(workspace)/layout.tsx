@@ -2,11 +2,16 @@ import Header from "@/modules/layouts/components/Header";
 import { currentUser } from "@/modules/authentication/actions";
 import { initializeWorkspace } from "@/modules/workspace/action";
 import TabbedLeftPanel from "@/modules/workspace/components/TabbedLeftPannel";
+import { redirect } from "next/navigation";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const workspace = await initializeWorkspace();
   const user = await currentUser();
 
+  // 🚫 BLOCK UNAUTHENTICATED USERS
+  if (!user) {
+    redirect("/signin");
+  }
+  const workspace = await initializeWorkspace();
   console.log(workspace);
   return (
     <>
