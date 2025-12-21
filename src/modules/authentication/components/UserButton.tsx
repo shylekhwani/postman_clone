@@ -112,6 +112,8 @@ export default function UserButton({
     return null;
   }
 
+  // console.log("Rendering UserButton for user:", user);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

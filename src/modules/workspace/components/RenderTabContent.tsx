@@ -19,6 +19,7 @@ const RenderTabContent = ({
   setIsModalOpen,
 }: Props) => {
   // console.log("collections in RenderTabContent:", collections);
+
   if (activeTab === "Collections") {
     return (
       <div className="h-full bg-zinc-950 text-zinc-100 flex flex-col">
@@ -65,7 +66,10 @@ const RenderTabContent = ({
               key={collection.id}
               className="flex flex-col p-3 border-b border-zinc-800"
             >
-              <CollectionFolder collection={collection} />
+              <CollectionFolder
+                collection={collection}
+                currentWorkspace={currentWorkspace}
+              />
             </div>
           ))
         ) : (

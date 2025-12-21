@@ -27,6 +27,8 @@ import AddRequestCollectionModal from "./AddRequestModal";
 import { useGetAllRequestFromCollection } from "@/modules/request/hooks/request";
 import { REST_METHOD } from "@prisma/client";
 import { useRequestPlaygroundStore } from "@/modules/request/store/useRequestStore";
+import DeleteRequestModal from "@/modules/request/components/DeleteRequestModal";
+import EditRequestModal from "@/modules/request/components/EditRequestModal";
 
 export interface CollectionProps {
   collection: {
@@ -35,13 +37,32 @@ export interface CollectionProps {
     updatedAt: Date;
     workspaceId: string;
   };
+  currentWorkspace: any;
 }
 
-const CollectionFolder = ({ collection }: CollectionProps) => {
+const requestColorMap: Record<REST_METHOD, string> = {
+  [REST_METHOD.GET]: "text-green-500",
+  [REST_METHOD.POST]: "text-blue-500",
+  [REST_METHOD.PUT]: "text-yellow-500",
+  [REST_METHOD.DELETE]: "text-red-500",
+  [REST_METHOD.PATCH]: "text-orange-500",
+};
+
+const CollectionFolder = ({
+  collection,
+  currentWorkspace,
+}: CollectionProps) => {
+  // Collection Folder State
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isAddRequestOpen, setIsAddRequestOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Request State
+  const [editRequestName, setEditRequestName] = useState<string>("");
+  const [isEditRequestOpen, setIsEditRequestOpen] = useState(false);
+  const [isDeleteRequestOpen, setIsDeleteRequestOpen] = useState(false);
+  const [requestId, setRequestId] = useState<string>("");
 
   const {
     data: requestData,
@@ -50,14 +71,6 @@ const CollectionFolder = ({ collection }: CollectionProps) => {
   } = useGetAllRequestFromCollection(collection.id);
 
   const { openRequestTab } = useRequestPlaygroundStore();
-
-  const requestColorMap: Record<REST_METHOD, string> = {
-    [REST_METHOD.GET]: "text-green-500",
-    [REST_METHOD.POST]: "text-blue-500",
-    [REST_METHOD.PUT]: "text-yellow-500",
-    [REST_METHOD.DELETE]: "text-red-500",
-    [REST_METHOD.PATCH]: "text-orange-500",
-  };
 
   const hasRequests = requestData && requestData.length > 0;
   console.log("Requests in Collection:", requestData);
@@ -212,11 +225,22 @@ const CollectionFolder = ({ collection }: CollectionProps) => {
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-32">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setIsEditRequestOpen(true);
+                              setRequestId(request.id);
+                              setEditRequestName(request.name);
+                            }}
+                          >
                             <Edit className="text-blue-400 mr-2 w-3 h-3" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setIsDeleteRequestOpen(true);
+                              setRequestId(request.id);
+                            }}
+                          >
                             <Trash className="text-red-400 mr-2 w-3 h-3" />
                             Delete
                           </DropdownMenuItem>
@@ -249,6 +273,19 @@ const CollectionFolder = ({ collection }: CollectionProps) => {
         isModalOpen={isDeleteOpen}
         setIsModalOpen={setIsDeleteOpen}
         collectionId={collection.id}
+      />
+
+      <EditRequestModal
+        isModalOpen={isEditRequestOpen}
+        setIsModalOpen={setIsEditRequestOpen}
+        requestId={requestId}
+        initialName={editRequestName}
+      />
+
+      <DeleteRequestModal
+        isModalOpen={isDeleteRequestOpen}
+        setIsModalOpen={setIsDeleteRequestOpen}
+        requestId={requestId}
       />
 
       <AddRequestCollectionModal
