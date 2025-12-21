@@ -3,10 +3,10 @@ import Modal from "@/components/ui/modal";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useRequestPlaygroundStore } from "../store/useRequestStore";
-import { Sparkle, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSuggestRequestName } from "@/modules/ai/hooks/AiSuggestions";
-import { set } from "zod";
+
 import { Input } from "@/components/ui/input";
 
 const AddNameModal = ({
