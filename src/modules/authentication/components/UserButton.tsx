@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  User,
-  LogOut,
-  Settings,
-  CreditCard,
-  User as UserIcon,
-} from "lucide-react";
+import { LogOut, Settings, CreditCard, User as UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -48,7 +42,6 @@ interface UserButtonProps {
 
 export default function UserButton({
   user,
-  onLogout,
   onSettings,
   onProfile,
   onBilling,

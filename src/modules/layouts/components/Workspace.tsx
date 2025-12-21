@@ -15,6 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useWorkspaces } from "@/modules/workspace/hooks/workspace";
 import { useWorkspaceStore } from "../../workspace/store";
+import JoinWorkspaceInput from "@/modules/workspace/components/JoinWorkspaceInput";
 
 const WorkSpace = () => {
   const { data: workspaces, isLoading } = useWorkspaces();
@@ -62,6 +63,14 @@ const WorkSpace = () => {
           ))}
 
           <Separator className="my-1" />
+
+          {/* JOIN VIA INVITE */}
+          <JoinWorkspaceInput
+            onSuccess={() => {
+              // refetch workspace list
+              window.location.reload();
+            }}
+          />
 
           <div className="p-2 flex flex-row justify-between items-center">
             <span className="text-sm font-semibold text-zinc-600">
