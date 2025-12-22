@@ -24,7 +24,21 @@ const WorkSpace = () => {
   const { selectedWorkspace, setSelectedWorkspace } = useWorkspaceStore();
 
   useEffect(() => {
-    if (workspaces && workspaces.length > 0 && !selectedWorkspace) {
+    if (!workspaces || workspaces.length === 0) {
+      setSelectedWorkspace(null);
+      return;
+    }
+
+    // If nothing selected → select first
+    if (!selectedWorkspace) {
+      setSelectedWorkspace(workspaces[0]);
+      return;
+    }
+
+    // If selected workspace no longer exists → fallback
+    const stillExists = workspaces.some((w) => w.id === selectedWorkspace.id);
+
+    if (!stillExists) {
       setSelectedWorkspace(workspaces[0]);
     }
   }, [workspaces, selectedWorkspace, setSelectedWorkspace]);

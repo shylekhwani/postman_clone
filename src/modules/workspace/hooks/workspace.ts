@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createWorkspace, getWorkspaceById, getWorkspaces } from "../action";
+import {
+  createWorkspace,
+  deleteWorkspace,
+  getWorkspaceById,
+  getWorkspaces,
+} from "../action";
 
 export function useWorkspaces() {
   return useQuery({
@@ -24,5 +29,16 @@ export function useGetWorkspace(id: string) {
     queryKey: ["workspace", id], // ["workspace", 123]  ==>  Workspace 123
     //✅ Each workspace gets its own cache slot
     queryFn: async () => getWorkspaceById(id),
+  });
+}
+
+export function useDeleteWorkspace(workspaceId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => deleteWorkspace(workspaceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+    },
   });
 }

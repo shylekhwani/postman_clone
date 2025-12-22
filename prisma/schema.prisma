@@ -154,7 +154,7 @@ model WorkspaceMember {
   workspaceId String
 
   user        User       @relation(fields: [userId], references: [id])
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
 
   createdAt   DateTime   @default(now())

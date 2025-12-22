@@ -1,40 +1,34 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Modal from "@/components/ui/modal";
-import { useDeleteRequest } from "../hooks/request";
-import React, { useEffect, useMemo, useState } from "react";
+
 import { toast } from "sonner";
+import { useDeleteWorkspace } from "../hooks/workspace";
 import { useGetWorkspaceMemebers } from "@/modules/invites/hooks/invite";
 import { currentUser } from "@/modules/authentication/actions";
+import { useEffect, useMemo, useState } from "react";
 
-const DeleteRequestModal = ({
+const DeleteWorkspaceModal = ({
   isModalOpen,
   setIsModalOpen,
-  requestId,
-  currentWorkspace,
+  workspaceId,
 }: {
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
-  requestId: string;
-  currentWorkspace: any;
+  workspaceId: string;
 }) => {
   const [userId, setUserId] = useState<string | undefined>("");
 
-  const { data: workspaceMembers } = useGetWorkspaceMemebers(
-    currentWorkspace?.id
-  );
+  const { data: workspaceMembers } = useGetWorkspaceMemebers(workspaceId);
 
   useEffect(() => {
     const fetchUser = async function () {
       const user = await currentUser();
-      //   console.log("Current User in DeleteRequestModal: ", user);
+
       setUserId(user?.id);
     };
     fetchUser();
   }, []);
-
-  //   console.log("Current User in DeleteRequestModal: ", workspaceMembers);
 
   const currentUserRole = useMemo(() => {
     let UserRole;
@@ -46,30 +40,28 @@ const DeleteRequestModal = ({
     return UserRole;
   }, [workspaceMembers, userId]);
 
-  //   console.log("Current UserRole in DeleteRequestModal: ", currentUserRole);
-
-  const { mutateAsync, isPending } = useDeleteRequest(requestId);
+  const { mutateAsync, isPending } = useDeleteWorkspace(workspaceId);
 
   const handleDelete = async () => {
     try {
       if (currentUserRole !== "ADMIN") {
-        toast.error("Only ADMINS are allowed to delete request");
+        toast.error("Only ADMINS are allowed to delete workspace");
         setIsModalOpen(false);
         return null;
       }
       await mutateAsync();
-      toast.success("Request deleted successfully");
+      toast.success("Workspace deleted successfully");
       setIsModalOpen(false);
     } catch (err) {
-      toast.error("Failed to delete request");
-      console.error("Failed to delete request:", err);
+      toast.error("Failed to delete workspace");
+      console.error("Failed to delete workspace:", err);
     }
   };
 
   return (
     <Modal
-      title="Delete Request"
-      description="Are you sure you want to delete this request? This action cannot be undone."
+      title="Delete Workspace"
+      description="Are you sure you want to delete this workspace? This action cannot be undone."
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
       onSubmit={handleDelete}
@@ -77,10 +69,11 @@ const DeleteRequestModal = ({
       submitVariant="destructive"
     >
       <p className="text-sm text-zinc-500">
-        Once deleted, requests will be permanently removed.
+        Once deleted, all collections and data in this workspace will be
+        permanently removed.
       </p>
     </Modal>
   );
 };
 
-export default DeleteRequestModal;
+export default DeleteWorkspaceModal;

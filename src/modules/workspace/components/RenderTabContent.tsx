@@ -1,9 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import EmptyCollections from "../../collections/components/EmptyCollection";
 import CollectionFolder from "@/modules/collections/components/CollectionFolder";
-import { ExternalLink, HelpCircle, Plus, Search } from "lucide-react";
+import {
+  ExternalLink,
+  HelpCircle,
+  Plus,
+  Search,
+  EllipsisVertical,
+  Trash,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DeleteWorkspaceModal from "./DeleteWorkspaceModal";
 
 interface Props {
   activeTab: string;
@@ -18,7 +32,8 @@ const RenderTabContent = ({
   collections,
   setIsModalOpen,
 }: Props) => {
-  // console.log("collections in RenderTabContent:", collections);
+  // console.log("workspace in RenderTabContent:", currentWorkspace);
+  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
 
   if (activeTab === "Collections") {
     return (
@@ -36,6 +51,23 @@ const RenderTabContent = ({
           <div className="flex items-center space-x-2">
             <HelpCircle className="w-4 h-4 text-zinc-400 hover:text-zinc-300 cursor-pointer" />
             <ExternalLink className="w-4 h-4 text-zinc-400 hover:text-zinc-300 cursor-pointer" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 hover:bg-zinc-800 rounded">
+                  <EllipsisVertical className="w-4 h-4 text-zinc-400 hover:text-indigo-400" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setIsWorkspaceModalOpen(true)}>
+                  <div className="flex flex-row justify-between items-center w-full">
+                    <div className="font-semibold flex justify-center items-center">
+                      <Trash className="text-red-400 mr-2 w-4 h-4" />
+                      Delete Workspace
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -75,6 +107,12 @@ const RenderTabContent = ({
         ) : (
           <EmptyCollections />
         )}
+
+        <DeleteWorkspaceModal
+          isModalOpen={isWorkspaceModalOpen}
+          setIsModalOpen={setIsWorkspaceModalOpen}
+          workspaceId={currentWorkspace?.id}
+        />
       </div>
     );
   } else {

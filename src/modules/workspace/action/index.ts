@@ -95,3 +95,11 @@ export const getWorkspaceById = async (id: string) => {
   });
   return workspace;
 };
+
+export const deleteWorkspace = async (workspaceId: string) => {
+  await db?.workspace.delete({
+    where: {
+      id: workspaceId,
+    },
+  });
+};

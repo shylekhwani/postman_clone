@@ -7,7 +7,7 @@ type Workspace = {
 
 interface WorkspaceState {
   selectedWorkspace: Workspace | null;
-  setSelectedWorkspace: (workspace: Workspace) => void;
+  setSelectedWorkspace: (workspace: Workspace | null) => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({

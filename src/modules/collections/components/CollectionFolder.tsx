@@ -286,6 +286,7 @@ const CollectionFolder = ({
         isModalOpen={isDeleteRequestOpen}
         setIsModalOpen={setIsDeleteRequestOpen}
         requestId={requestId}
+        currentWorkspace={currentWorkspace}
       />
 
       <AddRequestCollectionModal
