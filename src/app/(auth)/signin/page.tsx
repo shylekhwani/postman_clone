@@ -1,11 +1,4 @@
 "use client";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
 import { Chrome, Github } from "lucide-react";
@@ -18,10 +11,10 @@ const LoginPage = () => {
         <div className="p-8 pb-6">
           <div>
             <Link href={"/"}>
-              <h1 className="text-2xl font-bold">PostGuy</h1>
+              <h1 className="text-2xl font-bold">ReqCraft</h1>
             </Link>
             <h1 className="mb-1 mt-4 text-xl font-semibold">
-              Sign in to PostGuy
+              Sign in to ReqCraft
             </h1>
             <p className="text-sm">Welcome back! Sign in to continue</p>
           </div>

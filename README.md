@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 ReqCraft – API Testing Platform
 
-## Getting Started
+ReqCraft is a full-stack API testing tool inspired by Postman, designed for developers to create, organize, execute, and monitor REST API requests inside collaborative workspaces.
 
-First, run the development server:
+---
+
+## 🎥 Demo Video
+
+👉 **Watch Project Demo on YouTube:**  
+[https://youtube.com/your-demo-link](https://youtu.be/TrLyyf-kwqo)
+
+---
+
+## 🖼️ Screenshots
+
+> Replace the image links below with your uploaded screenshots
+
+![Picture 1](<./public/Screenshot%20(28).png>)
+
+![Picture 2](<./public/Screenshot%20(29).png>)
+
+![Picture 3](<./public/Screenshot%20(30).png>)
+
+![Picture 4](<./public/Screenshot%20(31).png>)
+
+---
+
+## ✨ Key Features
+
+- 🔐 **Authentication & Authorization**
+
+  - Social login using **GitHub** and **Google**
+  - Secure session handling with Better Auth
+
+- 🏢 **Workspace-Based Architecture**
+
+  - Create and manage multiple workspaces
+  - Role-based access (Admin / Member)
+  - Invite users via shareable invite links
+
+- 📦 **API Request Management**
+
+  - Create, edit, delete REST API requests
+  - Supports headers, query params, and request body
+  - Organize requests inside collections
+
+- ▶️ **Run & Track Requests**
+
+  - Execute requests using Axios
+  - Persist request runs with:
+    - Status code & status text
+    - Response body & headers
+    - Response size & latency
+  - View latest response instantly in the UI
+
+- ⚡ **Modern State Management**
+
+  - Server state handled using **TanStack React Query**
+  - UI and selection state managed with **Zustand**
+
+- 🎨 **Developer-Friendly UI**
+  - Built using **Radix UI + ShadCN**
+  - Dark mode support
+  - Hotkeys & toast notifications for better DX
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **Next.js 15 (App Router)**
+- **React 19 + TypeScript**
+- Tailwind CSS
+- Radix UI / ShadCN
+- Zustand
+- TanStack React Query
+
+### Backend
+
+- Next.js Server Actions
+- Prisma ORM
+- PostgreSQL
+- Axios (API execution)
+
+### Authentication
+
+- Better Auth
+- GitHub & Google OAuth
+
+### Infrastructure
+
+- Docker (PostgreSQL)
+- Prisma Migrations
+
+---
+
+## 🧠 Architecture Highlights
+
+- Clear separation between **server actions**, **hooks**, and **UI components**
+- Relational database design with proper **foreign keys & cascading deletes**
+- Request execution and persistence decoupled from UI rendering
+- Optimized cache invalidation and UI sync using React Query
+
+---
+
+## ⚙️ Getting Started (Local Setup)
+
+### 1️⃣ Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/shylekhwani/postman_clone.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2️⃣ Install Dependencies
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3️⃣ Setup Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a .env file:
 
-## Learn More
+DATABASE_URL=postgresql://user:password@localhost:5432/ReqCraft
+GITHUB_CLIENT_ID=your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
 
-To learn more about Next.js, take a look at the following resources:
+4️⃣ Start Database (Docker)
+docker-compose up -d
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5️⃣ Run Prisma Migrations
+npx prisma migrate dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+6️⃣ Start the App
+npm run dev
